@@ -1,0 +1,8 @@
+# Documentation pack (sold separately) and research data are not part of this repository.
+docs/
+research/
+
+__pycache__/
+tools/
+.fault.cfg
+.recall.cfg
