@@ -10,6 +10,7 @@ alarm.toml describes the alarm system. ALARM_CONFIG can name a different file.
 Run: JAVA=/path/to/java uv run --no-project python conformance.py
 """
 import ctypes
+import hashlib
 import os
 import re
 import shutil
@@ -24,7 +25,10 @@ HERE = Path(__file__).resolve().parent
 JAVA = os.environ.get("JAVA", "java")
 CONFIG = Path(os.environ.get("ALARM_CONFIG", HERE / "alarm.toml"))
 JAR = HERE / "tools" / "tla2tools.jar"
-JAR_URL = "https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar"
+# The TLA+ tools build that the verification used: TLC 2026.10.28.014557.
+JAR_URL = ("https://github.com/omar-A-hassan/alarmspec/releases/download/"
+           "tla2tools-2026.10.28/tla2tools.jar")
+JAR_SHA256 = "fc6878c603f0fdc18b9fe3e5bf51860cb90ab5b1154e3c371660c036d6bdd63e"
 RANK = {"LOW": 1, "MEDIUM": 2, "HIGH": 3}
 
 
@@ -130,12 +134,16 @@ MCIndex      == {fn((c, i) for i, c in enumerate(CONDS))}
 
 
 def tla_jar():
-    """Path of the TLA+ tools. Downloads them on first use."""
+    """Path of the TLA+ tools. Downloads the verified build on first use. Stops if the file
+    is a different build."""
     if not JAR.exists():
         JAR.parent.mkdir(exist_ok=True)
         part = JAR.with_suffix(".part")  # a stopped download leaves no partial jar
         urllib.request.urlretrieve(JAR_URL, part)
         part.rename(JAR)
+    if hashlib.sha256(JAR.read_bytes()).hexdigest() != JAR_SHA256:
+        sys.exit(f"{JAR} is not the verified TLA+ tools build (SHA-256 {JAR_SHA256}). "
+                 "Delete the file. The next run downloads the verified build.")
     return JAR
 
 

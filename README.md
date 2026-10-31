@@ -34,7 +34,7 @@ The specification does not cover condition detection, alarm-signal generation de
 | `conformance.py` | White-box test of the reference implementation in each reachable state |
 | `check.sh` | Runs all checks |
 | `mutants.sh` | Puts 5 known faults into the reference implementation, and makes sure that both tests find each fault |
-| `tools/tla2tools.jar` | TLA+ tools v1.8.0 (MIT License). `check.sh` downloads this file on the first run |
+| `tools/tla2tools.jar` | The TLA+ tools build that the verification used, TLC 2026.10.28 (MIT License). `check.sh` downloads it from the release `tla2tools-2026.10.28` and checks its SHA-256 |
 
 ## Requirements
 
